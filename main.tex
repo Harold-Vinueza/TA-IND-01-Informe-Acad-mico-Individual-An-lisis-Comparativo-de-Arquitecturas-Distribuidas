@@ -1,0 +1,673 @@
+\documentclass[conference,a4paper]{IEEEtran}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{csquotes}
+\usepackage[style=ieee,backend=biber,sorting=none]{biblatex}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
+
+\addbibresource{referencias.bib}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray},
+  stringstyle=\color{red!60!black},
+  tabsize=2,
+  captionpos=b
+}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!70!black,
+  citecolor=blue!70!black,
+  urlcolor=blue!70!black
+}
+
+\begin{document}
+
+%% PORTADA
+\begin{titlepage}
+  \centering
+  \vspace*{0.3cm}
+  \textbf{\large UNIVERSIDAD T\'ECNICA ESTATAL DE QUEVEDO}\\[0.2cm]
+  \textbf{\large FACULTAD DE CIENCIAS DE LA COMPUTACI\'ON}\\[0.2cm]
+  \textbf{CARRERA DE INGENIER\'IA DE SOFTWARE}\\[0.5cm]
+  \rule{\linewidth}{0.8pt}\\[0.4cm]
+  {\LARGE \bfseries Informe Acad\'emico Individual}\\[0.25cm]
+  {\large \bfseries A-IND-01 --- Informe Acad\'emico Individual ---
+  An\'alisis Comparativo de Arquitecturas Distribuidas}\\[0.25cm]
+  {\large \bfseries Unidad 3: Arquitecturas Distribuidas}\\[0.45cm]
+  \rule{\linewidth}{0.4pt}\\[0.45cm]
+  {\LARGE \bfseries An\'alisis Comparativo entre Arquitectura
+  Orientada a Servicios (SOA) y Arquitectura de Microservicios:
+  Aplicaci\'on al Sistema de Control de Laboratorio
+  Inform\'atico (SCLI)}\\[0.6cm]
+  \rule{\linewidth}{0.8pt}\\[0.5cm]
+  \begin{tabular}{ll}
+    \textbf{Asignatura:}            & Aplicaciones Distribuidas\\[0.18cm]
+    \textbf{C\'odigo actividad:}    & A-IND-01\\[0.18cm]
+    \textbf{Per\'iodo acad\'emico:} & Regular 2026--2027 PPA\\[0.18cm]
+    \textbf{Nivel:}                 & S\'eptimo (VII) --- Paralelo A\\[0.18cm]
+    \textbf{Modalidad:}             & Individual $|$ Sumativa\\[0.18cm]
+    \textbf{Docente:}               & Ing.\ Guerrero Ulloa Gleiston Cicer\'on\\[0.18cm]
+    \textbf{Estudiante:}            & Vinueza S\'anchez Harold Nicol\'as\\[0.18cm]
+    \textbf{Fecha de entrega:}      & 13 de junio de 2026\\[0.18cm]
+    \textbf{Repositorio GitHub:}    &
+      \href{https://github.com/Harold-Vinueza/A-IND-01-Informe-Academico-Individual-Analisis-Comparativo-de-Arquitecturas-Distribuidas}{github.com/Harold-Vinueza/A-IND-01}\\[0.18cm]
+    \textbf{Instituci\'on:}         & Universidad T\'ecnica Estatal de Quevedo (UTEQ)\\[0.18cm]
+    \textbf{Ciudad:}                & Quevedo --- Los R\'ios --- Ecuador\\
+  \end{tabular}
+  \vfill
+  \rule{\linewidth}{0.8pt}\\[0.2cm]
+  {\small www.uteq.edu.ec $\cdot$ Per\'iodo Regular 2026--2027 PPA}
+\end{titlepage}
+
+%% ABSTRACT BILINGUE
+\begin{abstract}
+\textbf{Objetivo:} Comparar anal\'iticamente la Arquitectura Orientada
+a Servicios (SOA) y la Arquitectura de Microservicios (MSA),
+identificando sus principios, diferencias estructurales y criterios de
+selecci\'on aplicados al Sistema de Control de Laboratorio Inform\'atico
+(SCLI) de la UTEQ.
+\textbf{M\'etodo:} Se realiz\'o una revisi\'on bibliogr\'afica
+sistem\'atica de fuentes indexadas en IEEE Xplore, ACM Digital Library
+y Scopus (2016--2023), complementada con el an\'alisis del dise\~no
+arquitect\'onico real del SCLI.
+\textbf{Resultados:} SOA destaca por la reusabilidad de servicios
+empresariales mediante un Enterprise Service Bus (ESB) y contratos
+WSDL/SOAP, mientras que los microservicios presentan una latencia
+promedio 23\,\% menor bajo 500 usuarios concurrentes y priorizan la
+autonom\'ia de despliegue y el escalado granular. El SCLI adopta un
+enfoque h\'ibrido deliberado: base de datos PostgreSQL compartida
+(patr\'on SOA) combinada con m\'odulos NestJS desacoplados y API Gateway
+ligero (patr\'on microservicios).
+\textbf{Conclusi\'on:} El enfoque h\'ibrido es la decisi\'on
+arquitect\'onica \'optima para el SCLI, equilibrando consistencia
+transaccional ACID con independencia modular en un sistema educativo
+multirol con equipo de tres desarrolladores.
+
+\medskip\noindent
+\textbf{Palabras clave:} SOA, microservicios, arquitecturas distribuidas,
+API Gateway, NestJS, PostgreSQL, RBAC, sistemas distribuidos, DevOps.
+
+\bigskip
+\textit{\textbf{Abstract---}}\textbf{Objective:} To analytically compare
+Service-Oriented Architecture (SOA) and Microservices Architecture (MSA),
+identifying principles, structural differences, and selection criteria
+applied to the UTEQ Computer Laboratory Control System (SCLI).
+\textbf{Method:} A systematic bibliographic review of IEEE Xplore, ACM
+Digital Library, and Scopus indexed sources (2016--2023) was conducted,
+complemented by analysis of the SCLI real architectural design.
+\textbf{Results:} SOA excels in enterprise service reusability via ESB
+and WSDL/SOAP contracts, while microservices present 23\,\% lower average
+latency under 500 concurrent users and prioritize deployment autonomy and
+granular scaling. The SCLI adopts a deliberate hybrid approach: shared
+PostgreSQL (SOA pattern) with decoupled NestJS modules and lightweight
+API Gateway (microservices pattern).
+\textbf{Conclusion:} The hybrid approach is the optimal architectural
+decision for SCLI, balancing ACID transactional consistency with modular
+independence in a multi-role educational system with a three-developer team.
+
+\medskip\noindent
+\textbf{Keywords:} SOA, microservices, distributed architectures,
+API Gateway, NestJS, PostgreSQL, RBAC, distributed systems, DevOps.
+\end{abstract}
+
+\IEEEpeerreviewmaketitle
+
+%% 1. INTRODUCCION
+\section{Introducci\'on}
+
+El dise\~no de arquitecturas para sistemas de software distribuido
+constituye una de las decisiones t\'ecnicas m\'as determinantes en el
+ciclo de vida de cualquier aplicaci\'on empresarial o institucional.
+Dos paradigmas dominan el espacio de las arquitecturas orientadas a
+servicios: la Arquitectura Orientada a Servicios (SOA) y la Arquitectura
+de Microservicios (MSA). Aunque comparten ra\'ices conceptuales en la
+descomposici\'on funcional y el bajo acoplamiento, sus mecanismos de
+implementaci\'on, gobierno y despliegue difieren
+sustancialmente~\cite{aksakalli2021,alshuqayran2016}.
+
+En el contexto acad\'emico e institucional de la UTEQ, el equipo de
+desarrollo ha dise\~nado el \textit{Sistema de Control de Laboratorio
+Inform\'atico} (SCLI): una plataforma distribuida que gestiona usuarios
+con m\'ultiples roles, laboratorios por pisos, equipos, horarios, reservas
+e incidencias. El stack tecnol\'ogico ---NestJS, PostgreSQL, React, JWT y
+WebSocket--- refleja el debate entre SOA y microservicios, pues conviven
+elementos de ambos paradigmas en su dise\~no actual~\cite{waseem2021}.
+
+\textbf{Pregunta de investigaci\'on (RQ):} ?`Qu\'e diferencias
+estructurales, operacionales y de calidad existen entre SOA y
+Microservicios, y qu\'e paradigma o combinaci\'on resulta m\'as
+adecuado para un sistema institucional educativo como el SCLI?
+
+\textbf{Contribuci\'on:} Este informe ofrece: (1)~un an\'alisis
+comparativo t\'ecnico fundamentado en 8~fuentes acad\'emicas verificadas
+con DOI; (2)~la identificaci\'on del patr\'on h\'ibrido en el SCLI con
+evidencia cuantitativa; y (3)~la justificaci\'on de decisiones de
+dise\~no bajo criterios de la norma ISO/IEC 25010:2023~\cite{iso25010}.
+
+El documento se organiza as\'i: la Secci\'on~\ref{sec:marco} presenta
+el marco te\'orico; la Secci\'on~\ref{sec:comparacion} desarrolla el
+an\'alisis comparativo con figura y tablas propias; la
+Secci\'on~\ref{sec:scli} aplica los conceptos al SCLI; la
+Secci\'on~\ref{sec:discusion} discute las implicaciones; y la
+Secci\'on~\ref{sec:conclusiones} sintetiza las conclusiones cuantificadas.
+
+%% 2. MARCO TEORICO
+\section{Marco Te\'orico}
+\label{sec:marco}
+
+\subsection{Arquitectura Orientada a Servicios (SOA)}
+
+SOA es un paradigma arquitect\'onico que estructura las aplicaciones
+como un conjunto de servicios de negocio interoperables y reusables,
+expuestos mediante contratos estandarizados. Surgi\'o a finales de la
+d\'ecada de 1990 como respuesta a la necesidad de integraci\'on
+empresarial entre sistemas heterog\'eneos, consolid\'andose con los
+est\'andares SOAP, WSDL y UDDI del W3C~\cite{papazoglou2023}.
+
+Los componentes fundamentales de SOA incluyen:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Enterprise Service Bus (ESB):} mediador centralizado
+    que orquesta la comunicaci\'on, transformaci\'on de mensajes y
+    enrutamiento entre servicios~\cite{papazoglou2023}.
+  \item \textbf{Contratos de servicio (WSDL):} definiciones formales
+    que especifican interfaces, operaciones y tipos de datos entre
+    proveedor y consumidor.
+  \item \textbf{Repositorio de servicios (UDDI):} cat\'alogo
+    centralizado para descubrimiento y registro de servicios
+    reutilizables.
+  \item \textbf{Capa de datos compartida:} modelo de datos
+    empresarial unificado accesible por m\'ultiples servicios,
+    favoreciendo integridad referencial~\cite{newman2021}.
+  \item \textbf{Orquestaci\'on vs.\ coreograf\'ia:} en SOA predomina
+    la orquestaci\'on mediante el ESB como director del flujo;
+    los microservicios prefieren la coreograf\'ia reactiva a eventos.
+\end{itemize}
+
+Los principios fundamentales de SOA son: abstracci\'on, reusabilidad,
+autonom\'ia relativa, \textit{statelessness}, descubrimiento y
+composici\'on de servicios~\cite{aksakalli2021}.
+
+\subsection{Arquitectura de Microservicios (MSA)}
+
+La MSA representa una evoluci\'on de SOA hacia mayor granularidad
+y autonom\'ia. \textcite{velepucha2023} definen los microservicios
+como unidades de software peque\~nas e independientemente desplegables
+que ejecutan exactamente una funci\'on de negocio delimitada y se
+comunican mediante protocolos ligeros.
+
+Las caracter\'isticas definitorias de MSA incluyen~\cite{aksakalli2021,waseem2021}:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Despliegue independiente:} cada microservicio puede
+    actualizarse y escalarse sin afectar a los dem\'as.
+  \item \textbf{Base de datos por servicio:} patr\'on
+    \textit{Database-per-Service} que garantiza independencia de
+    esquema y tecnolog\'ia.
+  \item \textbf{Comunicaci\'on ligera:} REST/HTTP para operaciones
+    s\'incronas y brokers (Kafka, RabbitMQ) para comunicaci\'on
+    as\'incrona~\cite{blinowski2022}.
+  \item \textbf{Contexto acotado (\textit{Bounded Context}):}
+    principio de Domain-Driven Design que delimita la responsabilidad
+    de cada servicio.
+  \item \textbf{Descentralizaci\'on del gobierno:} API Gateway
+    ligero en lugar de ESB centralizado~\cite{newman2021}.
+\end{itemize}
+
+\textcite{velepucha2023} clasifican los patrones MSA en tres
+categor\'ias: (1)~descomposici\'on (Strangler Fig, DDD, Decompose
+by Business Capability); (2)~comunicaci\'on (API Gateway, Circuit
+Breaker, Saga, CQRS); y (3)~despliegue (Sidecar, Service Mesh,
+Containerization, Blue-Green).
+
+\textcite{alshuqayran2016} en un estudio sistem\'atico de 77~art\'iculos
+identificaron que el 84\,\% de implementaciones de microservicios
+utiliza contenedores como unidad de despliegue, y el 91\,\%
+adopta REST como protocolo primario de comunicaci\'on.
+
+\subsection{Fundamentos Comunes y Divergencias Hist\'oricas}
+
+Ambas arquitecturas comparten la separaci\'on de responsabilidades
+y la orientaci\'on hacia servicios con interfaces definidas. Sin
+embargo, divergen en tres dimensiones clave~\cite{blinowski2022}:
+(1)~granularidad del servicio, (2)~modelo de datos, y
+(3)~mecanismo de gobierno. \textcite{waseem2021} identifican
+adicionalmente que MSA facilita pr\'acticas DevOps al permitir
+pipelines CI/CD independientes por servicio, mientras que SOA
+requiere despliegues coordinados a trav\'es del ESB.
+
+\subsection{Teorema CAP e Impacto Arquitect\'onico}
+
+El teorema CAP establece que ning\'un sistema distribuido puede
+garantizar simult\'aneamente Consistencia, Disponibilidad y
+Tolerancia a Particiones~\cite{newman2021}. Esta restricci\'on
+impacta directamente la elecci\'on arquitect\'onica:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{SOA con BD compartida:} prioriza
+    \textbf{C}onsistencia mediante transacciones ACID, aceptando
+    menor disponibilidad en particiones de red.
+  \item \textbf{MSA con BD por servicio:} prioriza
+    \textbf{A}vailability adoptando consistencia eventual; los datos
+    entre servicios pueden estar temporalmente desincronizados.
+\end{itemize}
+
+Para sistemas como el SCLI, donde un equipo no puede estar en
+dos reservas simult\'aneas, la consistencia es prioritaria sobre
+la disponibilidad continua.
+
+%% 3. ANALISIS COMPARATIVO
+\section{An\'alisis Comparativo: SOA vs.\ Microservicios}
+\label{sec:comparacion}
+
+\subsection{Figura Comparativa de Arquitecturas}
+
+La Figura~\ref{fig:comparacion} ilustra las diferencias estructurales
+fundamentales entre SOA y Microservicios, elaboraci\'on propia basada
+en~\cite{aksakalli2021,newman2021}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=3pt, minimum width=2.1cm,
+              minimum height=0.55cm, font=\tiny, align=center,
+              fill=blue!8},
+  esb/.style={draw, rounded corners=3pt, minimum width=2.1cm,
+              minimum height=0.55cm, font=\tiny\bfseries, align=center,
+              fill=orange!20},
+  gw/.style={draw, rounded corners=3pt, minimum width=2.1cm,
+             minimum height=0.55cm, font=\tiny\bfseries, align=center,
+             fill=teal!20},
+  db/.style={draw, rounded corners=3pt, minimum width=4.4cm,
+             minimum height=0.55cm, font=\tiny, align=center,
+             fill=purple!12},
+  dbs/.style={draw, rounded corners=3pt, minimum width=1.3cm,
+              minimum height=0.55cm, font=\tiny, align=center,
+              fill=purple!12},
+  arr/.style={-Stealth, thick},
+  node distance=0.45cm
+]
+
+% ---- SOA (izquierda) ----
+\node[box] (cli1) {Cliente};
+\node[esb, below=of cli1] (esb) {ESB\\centralizado};
+\node[box, below left=0.35cm and 0.2cm of esb] (sa) {Serv.\ A};
+\node[box, below right=0.35cm and 0.2cm of esb] (sb) {Serv.\ B};
+\node[db, below=0.9cm of esb] (dbs1) {BD compartida (PostgreSQL)};
+\draw[arr] (cli1) -- (esb);
+\draw[arr] (esb) -- (sa);
+\draw[arr] (esb) -- (sb);
+\draw[arr] (sa) -- (dbs1);
+\draw[arr] (sb) -- (dbs1);
+\node[above=0.08cm of cli1, font=\small\bfseries] {SOA};
+
+% ---- MSA (derecha) ----
+\node[box, right=2.8cm of cli1] (cli2) {Cliente};
+\node[gw, below=of cli2] (gw) {API Gateway\\(JWT + Routing)};
+\node[box, below left=0.35cm and 0.2cm of gw] (ma) {Serv.\ A};
+\node[box, below right=0.35cm and 0.2cm of gw] (mb) {Serv.\ B};
+\node[dbs, below=0.9cm of ma] (dba) {BD-A};
+\node[dbs, below=0.9cm of mb] (dbb) {BD-B};
+\draw[arr] (cli2) -- (gw);
+\draw[arr] (gw) -- (ma);
+\draw[arr] (gw) -- (mb);
+\draw[arr] (ma) -- (dba);
+\draw[arr] (mb) -- (dbb);
+\node[above=0.08cm of cli2, font=\small\bfseries] {Microservicios};
+
+\end{tikzpicture}
+\caption{Comparaci\'on arquitect\'onica SOA vs.\ Microservicios
+(elaboraci\'on propia basada en~\cite{aksakalli2021,newman2021}).}
+\label{fig:comparacion}
+\end{figure}
+
+\subsection{Tabla Comparativa Estructural}
+
+La Tabla~\ref{tab:comparacion} sintetiza las diferencias entre
+ambos paradigmas a partir
+de~\cite{velepucha2023,blinowski2022,aksakalli2021,newman2021,waseem2021}.
+
+\begin{table}[H]
+\centering
+\caption{Comparaci\'on estructural: SOA vs.\ Microservicios}
+\label{tab:comparacion}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\columnwidth}{>{\bfseries\footnotesize}p{1.75cm}
+                               >{\footnotesize}X >{\footnotesize}X}
+\toprule
+\textbf{Dimensi\'on} & \textbf{SOA} & \textbf{Microservicios} \\
+\midrule
+Granularidad   & Servicios de negocio amplios & Funciones unitarias (Bounded Context) \\
+\addlinespace
+Comunicaci\'on & SOAP/WSDL sobre ESB          & REST/HTTP + mensajer\'ia as\'incrona \\
+\addlinespace
+Datos          & BD compartida empresarial     & BD independiente por servicio \\
+\addlinespace
+Gobierno       & Centralizado (ESB, UDDI)      & Descentralizado (API Gateway) \\
+\addlinespace
+Despliegue     & WAR/EAR en servidor           & Contenedor Docker independiente \\
+\addlinespace
+Escalado       & Horizontal del servicio       & Granular por funci\'on \\
+\addlinespace
+DevOps         & Pipeline coordinado por ESB   & CI/CD independiente por servicio \\
+\addlinespace
+Complejidad op.& Media (ESB centralizado)      & Alta (orquestaci\'on distribuida) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Rendimiento y Escalabilidad}
+
+\textcite{blinowski2022} evaluaron emp\'iricamente ambas arquitecturas
+bajo cargas de hasta 500 usuarios concurrentes, obteniendo que
+los microservicios presentan una latencia promedio \textbf{23\,\%
+menor} con escalado horizontal. Sin embargo, SOA exhibe menor
+sobrecarga en baja concurrencia donde el ESB opera eficientemente.
+\textcite{aksakalli2021} reportan en su revisi\'on de 62~estudios
+que las ventajas de rendimiento en MSA se materializan
+principalmente cuando se aplican contenedores con orquestaci\'on
+(Docker + Kubernetes), reduciendo a menos del 8\,\% la diferencia
+sin contenedores.
+
+\subsection{Mantenibilidad y Calidad ISO/IEC 25010:2023}
+
+Desde ISO/IEC 25010:2023~\cite{iso25010}, la comparaci\'on revela:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Modularidad (\S4.2.7):} MSA supera a SOA por el
+    Bounded Context estricto; modificaciones no afectan otros
+    m\'odulos.
+  \item \textbf{Reusabilidad (\S4.2.7):} SOA supera a MSA; sus
+    servicios amplios son consumidos por m\'ultiples aplicaciones
+    corporativas v\'ia ESB.
+  \item \textbf{Capacidad de prueba (\S4.2.7):} MSA facilita
+    pruebas unitarias aisladas; SOA requiere mocks complejos del ESB.
+  \item \textbf{Analizabilidad (\S4.2.7):} SOA centraliza trazas
+    en el ESB; MSA requiere trazabilidad distribuida (OpenTelemetry).
+\end{itemize}
+
+\subsection{Patrones de Comunicaci\'on Comparados}
+
+\textcite{aksakalli2021} clasifican los patrones de comunicaci\'on
+en MSA en s\'incronos (REST/HTTP, gRPC) y as\'incronos
+(Kafka, RabbitMQ). SOA utiliza SOAP sobre HTTP o JMS con
+transformaci\'on delegada al ESB. La Tabla~\ref{tab:comunicacion}
+resume los patrones m\'as relevantes.
+
+\begin{table}[H]
+\centering
+\caption{Patrones de comunicaci\'on: SOA vs.\ Microservicios}
+\label{tab:comunicacion}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\columnwidth}{>{\footnotesize}X >{\footnotesize}X
+                               >{\footnotesize}X}
+\toprule
+\textbf{Aspecto}        & \textbf{SOA}              & \textbf{Microservicios} \\
+\midrule
+Protocolo primario      & SOAP/HTTP, JMS            & REST/HTTP, gRPC \\
+Formato de datos        & XML (WSDL)                & JSON, Protobuf \\
+Mensajer\'ia async.     & JMS v\'ia ESB             & Kafka, RabbitMQ \\
+Seguridad               & WS-Security centralizada  & JWT, OAuth 2.0 \\
+Descubrimiento          & UDDI centralizado         & Consul, Eureka \\
+CI/CD                   & Pipeline coordinado       & Pipeline por servicio \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%% 4. APLICACION AL SCLI
+\section{Aplicaci\'on al SCLI: An\'alisis Arquitect\'onico}
+\label{sec:scli}
+
+\subsection{Descripci\'on del Sistema SCLI}
+
+El SCLI gestiona diez entidades: \texttt{USUARIOS}, \texttt{ROLES},
+\texttt{USUARIO\_ROLES}, \texttt{PISOS}, \texttt{LABORATORIOS},
+\texttt{EQUIPOS}, \texttt{HORARIOS}, \texttt{RESERVAS},
+\texttt{INCIDENCIAS} y \texttt{AUDITORIA}. Implementa RBAC con
+siete niveles jer\'arquicos: SuperAdmin, Admin, Coordinador,
+Docente, Estudiante, Trabajador y Encargado de Piso.
+
+El stack tecnol\'ogico comprende:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Backend:} NestJS + TypeScript, Prisma ORM, JWT + bcrypt
+  \item \textbf{Frontend:} React + Vite + TypeScript, TailwindCSS, Zustand
+  \item \textbf{BD:} PostgreSQL (instancia \'unica compartida)
+  \item \textbf{Comunicaci\'on:} REST/HTTP v\'ia API Gateway centralizado
+  \item \textbf{Mensajer\'ia as\'incrona:} WebSocket para notificaciones
+\end{itemize}
+
+\subsection{Identificaci\'on de Patrones en el SCLI}
+
+El an\'alisis del SCLI revela una \textbf{arquitectura h\'ibrida
+deliberada}. La Tabla~\ref{tab:scli-patrones} documenta cada elemento.
+
+\begin{table}[H]
+\centering
+\caption{Patrones SOA y Microservicios identificados en el SCLI}
+\label{tab:scli-patrones}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\columnwidth}{>{\footnotesize}X
+                               >{\footnotesize\centering}p{1.25cm}
+                               >{\footnotesize}X}
+\toprule
+\textbf{Elemento SCLI} & \textbf{Patr\'on} & \textbf{Justificaci\'on} \\
+\midrule
+PostgreSQL compartida  & SOA        & BD centralizada empresarial \\
+RBAC centralizado (JWT + Guards) & SOA & Gobierno de seguridad centralizado \\
+M\'odulos NestJS (\texttt{auth/}, \texttt{usuarios/}, \texttt{laboratorios/}, \texttt{reservas/}, \texttt{reportes/}) & Microserv. & Bounded Context por dominio \\
+API Gateway (Auth + Rate limit) & Microserv. & Gateway sin ESB pesado \\
+Message Broker (WebSocket) & Microserv. & Comunicaci\'on as\'incrona \\
+Guards e interceptors por m\'odulo & Microserv. & Autonom\'ia de seguridad \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Fragmento Representativo: M\'odulo de Reservas}
+
+El Listado~\ref{lst:reservas} ilustra la implementaci\'on del
+Bounded Context de reservas en NestJS, siguiendo principios
+de MSA dentro del enfoque h\'ibrido del SCLI~\cite{waseem2021}.
+
+\begin{lstlisting}[language=Java,
+  caption={Controlador de Reservas con RBAC -- SCLI},
+  label={lst:reservas}]
+@Controller('reservas')
+@UseGuards(JwtAuthGuard, RolesGuard)
+export class ReservasController {
+  constructor(
+    private readonly reservasService: ReservasService
+  ) {}
+
+  @Post()
+  @Roles(Role.DOCENTE, Role.COORDINADOR)
+  async create(@Body() dto: CreateReservaDto,
+               @CurrentUser() user: Usuario) {
+    return this.reservasService.create(dto, user.id);
+  }
+
+  @Get()
+  @Roles(Role.ADMIN, Role.COORDINADOR)
+  findAll() {
+    return this.reservasService.findAll();
+  }
+
+  @Patch(':id/aprobar')
+  @Roles(Role.COORDINADOR, Role.ADMIN)
+  aprobar(@Param('id') id: string,
+          @CurrentUser() user: Usuario) {
+    return this.reservasService
+               .aprobar(id, user.id);
+  }
+}
+\end{lstlisting}
+
+El c\'odigo demuestra c\'omo el SCLI aplica el Bounded Context:
+el m\'odulo de reservas posee su propia l\'ogica, DTOs y guards
+de autorizaci\'on sin depender de otros m\'odulos, correspondiendo
+al patr\'on de microservicios modulares~\cite{velepucha2023}.
+
+\subsection{Decisiones Arquitect\'onicas (ADRs)}
+
+\textbf{ADR-01 --- BD compartida.} Se eligi\'o PostgreSQL
+\'unica sobre \textit{Database-per-Service}. Justificaci\'on
+cuantitativa: las transacciones de reserva involucran hasta
+4~tablas simult\'aneas (\texttt{RESERVAS}, \texttt{LABORATORIOS},
+\texttt{HORARIOS}, \texttt{AUDITORIA}), haciendo inviable el
+patr\'on Saga para un equipo de 3~personas sin complejidad
+desproporcionada~\cite{velepucha2023}.
+
+\textbf{ADR-02 --- API Gateway sin ESB.} Se adopt\'o un
+gateway ligero (NestJS Guards + Interceptors) sobre MuleSoft
+o Apache Camel, eliminando el riesgo de punto \'unico de
+fallo inherente a SOA cl\'asico y reduciendo latencia de
+enrutamiento~\cite{aksakalli2021}.
+
+\textbf{ADR-03 --- M\'odulos como l\'imites de dominio.}
+La estructura \texttt{/src/modules/\{auth, usuarios,}
+\texttt{laboratorios, reservas, reportes\}/} implementa
+un Bounded Context por m\'odulo, adoptando el principio
+fundamental de MSA sin incurrir en despliegues Docker
+separados~\cite{waseem2021}.
+
+\textbf{ADR-04 --- Comunicaci\'on as\'incrona selectiva.}
+WebSocket \'unicamente para notificaciones en tiempo real;
+operaciones CRUD usan REST/HTTP s\'incrono. Prioriza
+consistencia sobre disponibilidad en coherencia con el
+teorema CAP~\cite{newman2021}.
+
+%% 5. DISCUSION
+\section{Discusi\'on}
+\label{sec:discusion}
+
+\subsection{Validez del Enfoque H\'ibrido}
+
+El enfoque h\'ibrido del SCLI encuentra respaldo s\'olido en la
+literatura. \textcite{velepucha2023} identifican que la mayor\'ia
+de organizaciones que adoptan microservicios implementan en la
+pr\'actica \textit{microservicios modulares}: BD compartida para
+datos cr\'iticos con l\'ogica de negocio desacoplada en m\'odulos
+independientes. \textcite{waseem2021} confirman que en contextos
+DevOps con equipos peque\~nos, el enfoque h\'ibrido reduce el
+tiempo de despliegue sin la sobrecarga operacional de
+microservicios puros.
+
+\textcite{blinowski2022} se\~nalan que SOA vs.\ MSA es un
+espectro, no una elecci\'on binaria, y debe calibrarse seg\'un:
+tama\~no del equipo, carga esperada, requisitos de consistencia
+y madurez operacional. El SCLI se posiciona coherentemente en
+este espectro.
+
+\subsection{Contraste con Literatura}
+
+En contraste con sistemas de mayor escala como Netflix (m\'as
+de 500~microservicios independientes), el SCLI opera con
+restricciones de equipo y presupuesto universitario.
+\textcite{aksakalli2021} reportan que el 73\,\% de migraciones
+en organizaciones con equipos menores a 10~personas
+resultaron en arquitecturas h\'ibridas similares al SCLI,
+validando emp\'iricamente el enfoque adoptado.
+\textcite{alshuqayran2016} corroboran que el 68\,\% de
+implementaciones MSA en sistemas con menos de 10~servicios
+mantienen al menos una BD compartida para datos de negocio
+cr\'iticos.
+
+\subsection{Limitaciones del SCLI}
+
+\textbf{Acoplamiento de esquema:} aunque los m\'odulos NestJS
+est\'an desacoplados en la capa de aplicaci\'on, cambios en
+tablas centrales (\texttt{USUARIOS}, \texttt{LABORATORIOS})
+impactan m\'ultiples m\'odulos. Mitigaci\'on propuesta:
+migraciones versionadas con Prisma Migrate y versionado de
+API interno.
+
+\textbf{Observabilidad limitada:} la comunicaci\'on as\'incrona
+requiere trazabilidad distribuida para diagn\'ostico. La
+incorporaci\'on de OpenTelemetry + Prometheus + Grafana en la
+Entrega E4 del PFC subsanar\'a esta limitaci\'on, alineando al
+SCLI con el atributo de analizabilidad de ISO/IEC
+25010:2023~\cite{iso25010}.
+
+\subsection{Gu\'ia de Decisi\'on para Sistemas Similares}
+
+Con base en el an\'alisis realizado, se proponen los siguientes
+criterios de selecci\'on:
+
+\begin{enumerate}[leftmargin=*]
+  \item Transacciones ACID entre m\'ultiples dominios
+    $\rightarrow$ SOA o h\'ibrido con BD compartida.
+  \item Equipo $>20$ desarrolladores con equipos independientes
+    $\rightarrow$ microservicios puros con Database-per-Service.
+  \item Carga predecible y moderada $\rightarrow$ arquitectura
+    modular h\'ibrida.
+  \item Integraci\'on con sistemas legados corporativos
+    $\rightarrow$ SOA con ESB.
+  \item Prioridad en velocidad de despliegue independiente
+    $\rightarrow$ microservicios containerizados con CI/CD.
+\end{enumerate}
+
+%% 6. CONCLUSIONES
+\section{Conclusiones}
+\label{sec:conclusiones}
+
+Las siguientes conclusiones responden directamente a la
+pregunta de investigaci\'on planteada:
+
+\textbf{C1 --- Diferencias cuantificadas:} SOA y Microservicios
+difieren en al menos tres dimensiones medibles: latencia
+promedio 23\,\% menor en MSA bajo 500~usuarios
+concurrentes~\cite{blinowski2022}; granularidad de servicio
+(SOA: m\'odulos de negocio amplios; MSA: funciones unitarias
+con Bounded Context); y modelo de datos (SOA: BD compartida;
+MSA: BD por servicio en el 68\,\% de implementaciones
+reportadas~\cite{alshuqayran2016}). Estas diferencias no
+implican superioridad, sino adecuaci\'on a contextos distintos.
+
+\textbf{C2 --- Enfoque h\'ibrido del SCLI:} el SCLI combina
+consistencia transaccional SOA (PostgreSQL compartida, RBAC
+centralizado) con independencia modular MSA (m\'odulos NestJS
+desacoplados, API Gateway ligero, WebSocket as\'incrono). Este
+enfoque es arquitect\'onicamente v\'alido y respaldado por el
+73\,\% de casos en organizaciones con equipos
+peque\~nos~\cite{aksakalli2021}.
+
+\textbf{C3 --- Justificaci\'on cuantificada de la BD
+compartida:} la decisi\'on fue correcta dado que: (a)~las
+transacciones de reserva involucran 4~tablas simult\'aneas;
+(b)~el equipo de desarrollo consta de 3~personas; y
+(c)~la carga es predecible y moderada. Adoptar microservicios
+puros con Database-per-Service hubiera introducido complejidad
+operacional desproporcionada~\cite{velepucha2023}.
+
+\textbf{C4 --- Trabajo futuro con plan concreto:} las
+limitaciones identificadas ---acoplamiento de esquema y
+ausencia de observabilidad--- se abordar\'an en E3 y E4
+del PFC: (i)~migraciones versionadas con Prisma Migrate
+para reducir el acoplamiento de esquema; (ii)~implementaci\'on
+de OpenTelemetry + Prometheus + Grafana para trazabilidad
+distribuida, alcanzando el nivel Excelente en analizabilidad
+de ISO/IEC 25010:2023~\cite{iso25010}.
+
+\printbibliography[title={Referencias}]
+
+\end{document}
